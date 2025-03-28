@@ -8,15 +8,15 @@ pipeline {
             }
         }
         stage('Build') {
-            steps {
-                bat '''
-                mkdir build 2>nul
-                cd build
-                cmake .. -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_CXX_FLAGS="/W4 /WX-"
-                cmake --build . -- /p:WarningLevel=4 "/p:TreatWarningAsError=false"
-                '''
-            }
-        }
+			steps {
+				bat '''
+				mkdir build 2>nul
+				cd build
+				cmake .. -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+				cmake --build .
+				'''
+			}
+		}
         stage('Git Info') {
             steps {
                 script {
