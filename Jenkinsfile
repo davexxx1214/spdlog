@@ -23,8 +23,8 @@ pipeline {
         always {
             recordIssues enabledForFailure: true,
                 tools: [msBuild()],
-                blameDisabled: false,
-                forensicsDisabled: false
+                skipBlames: false,  // 替换 blameDisabled
+                skipForensics: false  // 替换 forensicsDisabled
         }
     }
 }
