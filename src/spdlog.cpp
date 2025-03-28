@@ -98,6 +98,12 @@ void sign_conversion_warning() {
     unsigned int positive = static_cast<unsigned int>(negative);  // 警告：负值转换为无符号类型
 }
 
+// 添加一个有符号转换警告的函数
+void sign_conversion_warning1() {
+    int negative = -1;
+    unsigned int positive = static_cast<unsigned int>(negative);  // 警告：负值转换为无符号类型
+}
+
 // 在文件末尾调用这些函数，确保它们被编译
 // 但不要在实际运行时调用，以避免潜在问题
 void trigger_warnings() {
