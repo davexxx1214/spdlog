@@ -36,21 +36,23 @@ pipeline {
     post {
         always {
             script {
-                // 记录警告并获取结果
+                // 记录警告
                 def issues = recordIssues enabledForFailure: true,
                     tools: [msBuild()],
                     skipBlames: false
                 
-                // 获取新增警告
-                def newIssues = issues.getNewIssues()
+                // 获取所有警告
+                def allIssues = issues.all
                 
-                if (newIssues.size() > 0) {
+                if (allIssues.size() > 0) {
+                    echo "Found ${allIssues.size()} warnings"
+                    
                     // 创建警告责任人映射
                     def authorWarnings = [:]
                     def authorEmails = [:]
                     
-                    // 遍历新增警告
-                    newIssues.each { issue ->
+                    // 遍历所有警告
+                    allIssues.each { issue ->
                         def author = issue.getAuthor() ?: "Unknown"
                         def email = issue.getAuthorEmail() ?: "unknown@example.com"
                         
@@ -77,7 +79,7 @@ pipeline {
                     authorWarnings.each { author, warnings ->
                         def email = authorEmails[author]
                         def warningCount = warnings.size()
-                        def subject = "[Jenkins] ${warningCount} new warning(s) in ${env.JOB_NAME} by ${author}"
+                        def subject = "[Jenkins] ${warningCount} warning(s) in ${env.JOB_NAME} by ${author}"
                         
                         // 构建HTML邮件内容
                         def body = """
@@ -94,9 +96,9 @@ pipeline {
                             </style>
                         </head>
                         <body>
-                            <h2>New Warnings Report</h2>
+                            <h2>Warnings Report</h2>
                             <p>Hello ${author},</p>
-                            <p>You have introduced ${warningCount} new warning(s) in the project <b>${env.JOB_NAME}</b> (build #${env.BUILD_NUMBER}).</p>
+                            <p>You have ${warningCount} warning(s) in the project <b>${env.JOB_NAME}</b> (build #${env.BUILD_NUMBER}).</p>
                             <p>Please review and fix these warnings:</p>
                             <table>
                                 <tr>
@@ -128,7 +130,6 @@ pipeline {
                         """
                         
                         // 只发送给测试邮箱，而不是实际责任人
-                        // 注意：这里检查是否是您的邮箱，如果是则发送，否则只记录日志
                         if (email.toLowerCase() == "davexxx@163.com") {
                             emailext (
                                 subject: subject,
@@ -153,7 +154,7 @@ pipeline {
                         }
                     }
                 } else {
-                    echo "No new warnings found"
+                    echo "No warnings found"
                 }
             }
         }
