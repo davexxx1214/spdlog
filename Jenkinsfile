@@ -12,9 +12,10 @@ pipeline {
 				bat '''
 				mkdir build 2>nul
 				cd build
-				cmake .. -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
-				cmake --build .
+				cmake .. -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_CXX_FLAGS="/W3"
+				cmake --build . -- /p:WarningLevel=3
 				'''
+
 			}
 		}
         stage('Git Info') {
