@@ -17,14 +17,27 @@ pipeline {
                 '''
             }
         }
+        stage('Git Info') {
+            steps {
+                script {
+                    // 获取当前提交信息
+                    def gitCommit = bat(script: 'git rev-parse HEAD', returnStdout: true).trim()
+                    def gitAuthor = bat(script: 'git show -s --format=%%an', returnStdout: true).trim()
+                    def gitEmail = bat(script: 'git show -s --format=%%ae', returnStdout: true).trim()
+                    
+                    echo "Commit: ${gitCommit}"
+                    echo "Author: ${gitAuthor}"
+                    echo "Email: ${gitEmail}"
+                }
+            }
+        }
     }
     
     post {
         always {
             recordIssues enabledForFailure: true,
                 tools: [msBuild()],
-                skipBlames: false,  // 替换 blameDisabled
-                skipForensics: false  // 替换 forensicsDisabled
+                skipBlames: false
         }
     }
 }
